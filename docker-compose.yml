@@ -1,0 +1,66 @@
+services:
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopenergy-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      RUN_BALANCE_CHECKER: "false"
+      RUN_PRICE_UPDATER: "false"
+    command: python main.py
+    volumes:
+      - ./database.db:/app/database.db
+      - ./images:/app/images:ro
+
+  balance-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopenergy-balance-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python app/workers/balance_worker.py
+    volumes:
+      - ./database.db:/app/database.db
+      - ./images:/app/images:ro
+
+  price-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopenergy-price-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python app/workers/price_worker.py
+    volumes:
+      - ./database.db:/app/database.db
+
+  smart-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopenergy-smart-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python app/workers/smart_worker.py
+    volumes:
+      - ./database.db:/app/database.db
+
+  trust-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: shopenergy-trust-worker
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: python app/workers/trust_worker.py
+    volumes:
+      - ./database.db:/app/database.db
+
